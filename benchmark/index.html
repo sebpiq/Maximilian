@@ -1,0 +1,108 @@
+<!doctype html>
+
+<html>
+    <head>
+        <style>
+            .graph path.line {
+                stroke: blue;
+                fill: none;
+            }
+
+            .benchmarkResult .stats td {
+                color: purple;
+            }
+
+            .benchmarkResult .stats th {
+                text-align: right;
+            }
+
+        </style>
+        <script src="https://d3js.org/d3.v5.min.js"></script>
+        <script>
+            const benchmarkWorker = new Worker('./benchmark.worker.js', {type:'module'});
+            benchmarkWorker.onmessage = function(message) {
+                message.data.benchmarkResults.forEach(
+                    benchmarkResult => displayBenchmarkResult(benchmarkResult, message.data.config)
+                )
+            }
+
+            const displayBenchmarkResult = ({benchmarkName, preview, meanDuration}, benchmarkConfig) => {
+                const container = document.createElement('div')
+                container.setAttribute('class', 'benchmarkResult')
+                document.body.appendChild(container)
+                const meanExecutionTimePerIterationMs = meanDuration / benchmarkConfig.computeIterations * 1000
+                container.innerHTML = `
+                    <h2>${benchmarkName}</h2>
+                    <table class="stats">
+                        <tr>
+                            <th>Mean execution time per operation</th>
+                            <td>${meanExecutionTimePerIterationMs} milliseconds</td>
+                        </tr>
+                        <tr>
+                            <th>Mean execution time</th>
+                            <td>${meanDuration} seconds</td>
+                        </tr>
+                    </table>
+                `
+                plotSignal(createGraph(container), preview)
+            }
+
+            // Set the dimensions of the canvas / graph
+            var margin = {top: 30, right: 20, bottom: 30, left: 50},
+                width = 600 - margin.left - margin.right,
+                height = 270 - margin.top - margin.bottom
+
+            const createGraph = (container) => {
+                var svg = d3.select(container)
+                    .append('svg')
+                        .attr('width', width + margin.left + margin.right)
+                        .attr('height', height + margin.top + margin.bottom)
+                        .attr('class', 'graph')
+                    .append('g')
+                        .attr('transform', 
+                            'translate(' + margin.left + ',' + margin.top + ')')
+                return svg
+            }
+
+            const plotSignal = (graph, samples) => {
+
+                // Set the ranges
+                const x = d3.scaleLinear()
+                    .range([0, width])
+                    .domain([0, samples.length])
+                
+                const y = d3.scaleLinear()
+                    .range([height, 0])
+                    .domain([-1, 1])
+
+                // Define the axes
+                const xAxis = d3.axisBottom(x).ticks(5)
+                const yAxis = d3.axisLeft(y).ticks(5)
+
+                // Define the line
+                const valueline = d3.line()
+                    .x(function(d, i) { return x(i) })
+                    .y(function(d) { return y(d) })
+
+                // Add the valueline path.
+                graph.append('path')
+                    .attr('class', 'line')
+                    .attr('d', valueline(samples))
+
+                // Add the X Axis
+                graph.append('g')
+                    .attr('class', 'x axis')
+                    .attr('transform', 'translate(0,' + height + ')')
+                    .call(xAxis)
+
+                // Add the Y Axis
+                graph.append('g')
+                    .attr('class', 'y axis')
+                    .call(yAxis)
+            }
+        </script>
+    </head>
+    <body>
+        
+    </body>
+</html>
