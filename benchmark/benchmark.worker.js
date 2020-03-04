@@ -1,73 +1,60 @@
-import Module from './maximilian.wasmmodule.js'
+import { runBenchmark } from './common/benchmark.js'
+import WasmAudioModule from  './wasm/simple/audio.mjs'
+import MaxiWasmModule from './wasm/maximilian/maximilian.wasmmodule.js'
 
-const COMPUTE_ITERATIONS = 1000000
-const FUNCTION_ITERATIONS = 10
-const SAMPLE_RATE = 44100
 const FREQUENCY = 40
-const PREVIEW_SAMPLE_SIZE = 44100 / 40 * 3
 
-function maximilianTriangle() {
-    const osc = new Module.maxiOsc()
+function wasmTriangle({ computeIterations }, { wasmAudioModule, output }) {
     let i = 0
-    const output = new Array(COMPUTE_ITERATIONS)
-
-    for (i; i < COMPUTE_ITERATIONS; i++) {
-        output[i] = osc.triangle(FREQUENCY)
+    for (i; i < computeIterations; i++) {
+        output[i] = wasmAudioModule._triangle(0, FREQUENCY)
     }
-
-    return output
 }
 
-function pureJsTriangle() {
+function maxiWasmTriangle({ computeIterations }, { output }) {
+    let i = 0
+    const osc = new MaxiWasmModule.maxiOsc()
+
+    for (i; i < computeIterations; i++) {
+        output[i] = osc.triangle(FREQUENCY)
+    }
+}
+
+function wasmTriangleVector({ computeIterations }, context) {
+    context.wasmAudioModule._triangleVector(10000000, 0, computeIterations, FREQUENCY)
+    context.output = context.wasmAudioModule.HEAPF32.subarray(0, computeIterations)
+}
+
+function pureJsTriangle({ computeIterations, sampleRate }, { output }) {
     let i = 0
     let phase = 0
-    const output = new Array(COMPUTE_ITERATIONS)
 
-    for (i; i < COMPUTE_ITERATIONS; i++) {
+    for (i; i < computeIterations; i++) {
         if ( phase >= 1.0 ) phase -= 1.0
-        phase += 1 / (SAMPLE_RATE/FREQUENCY)
+        phase += 1 / (sampleRate/FREQUENCY)
         if (phase <= 0.5 ) {
             output[i] = (phase - 0.25) * 4
         } else {
             output[i] = ((1 - phase) - 0.25) * 4
         }
     }
-
-    return output
 }
 
-const getMeanDurationSeconds = (times) =>
-    times.reduce((sum, val) => sum + val, 0) / times.length / 1000
-
-const runBenchmark = (func) => {
-    const benchmarkName = func.name
-    console.log(`START RUNNING ${benchmarkName}`)
-    
-    let i = 0
-    const times = []
-    let preview = null
-    for (i; i < FUNCTION_ITERATIONS; i++) {
-        const startDate = Date.now()
-        const output = func()
-        const endDate = Date.now()
-        if (i === 0) {
-            preview = output.slice(0, PREVIEW_SAMPLE_SIZE)
-        }
-        times.push(endDate - startDate)
+onmessage = (message) => {
+    switch(message.data.operation) {
+        case 'run':
+            const config = message.data.payload
+            const wasmAudioModule = WasmAudioModule()
+            wasmAudioModule.then(() => {
+                const results = runBenchmark(
+                    config, 
+                    [wasmTriangle, { wasmAudioModule, output: new Array(config.computeIterations) }],
+                    [wasmTriangleVector, { wasmAudioModule, output: null }],
+                    [pureJsTriangle, { output: new Array(config.computeIterations) }],
+                    [maxiWasmTriangle, { output: new Array(config.computeIterations) }],
+                )
+                postMessage({ config, results })
+            })
+            return 
     }
-    
-    const meanDuration = getMeanDurationSeconds(times)
-    console.log(`END RUNNING ${benchmarkName}, time : ${meanDuration}`)
-    return {preview, meanDuration, benchmarkName}
 }
-
-postMessage({
-    config: {
-        sampleRate: SAMPLE_RATE, 
-        computeIterations: COMPUTE_ITERATIONS
-    },
-    benchmarkResults: [
-        runBenchmark(maximilianTriangle),
-        runBenchmark(pureJsTriangle)
-    ]
-})
