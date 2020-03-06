@@ -6,9 +6,9 @@
 extern "C" {
   void initialize(int node_count, int block_size);
   float* dsp_block(NodeKey root, NodeKey leaf);
-  NodeKey wcreate_node(int node_type);
-  void wconnect_ports(NodeKey source_key, PortKey output, NodeKey sink_key, PortKey input);
-  void* wget_node_outputs(NodeKey node_key);
+  NodeKey wnode_create(int node_type);
+  void wnode_ports_connect(NodeKey source_key, PortKey output, NodeKey sink_key, PortKey input);
+  void* wnode_read_outputs(NodeKey node_key);
 }
 
 void triangle(maxiOsc* osc, float** inputs, float** outputs) {
@@ -27,7 +27,7 @@ Node* setup_triangle() {
 
 void fixed_4(float* state, float** inputs, float** outputs) {
   // printf("fixed_value %p \n", outputs[0]);
-  outputs[0][0] = 4;
+  outputs[0][0] = 40;
 }
 
 Node* setup_fixed_4() {
@@ -66,7 +66,10 @@ Node* setup_times_3() {
 int BLOCK_SIZE = 0;
 float* BLOCK;
 float* dsp_block(NodeKey root, NodeKey leaf) {
-  float* leaf_output = (float*) get_node_output(leaf, 0);
+  // printf("DSP BLOCK START\n");
+  graph_compile(root);
+  float* leaf_output = (float*) node_read_output(leaf, 0);
+  // printf("DSP BLOCK %i\n", BLOCK_SIZE);
   for (int i = 0; i < BLOCK_SIZE; i++) {
     dsp_loop(root);
     BLOCK[i] = *leaf_output;
@@ -74,25 +77,26 @@ float* dsp_block(NodeKey root, NodeKey leaf) {
   return BLOCK;
 };
 
-void wconnect_ports(NodeKey source_key, PortKey output, NodeKey sink_key, PortKey input) {
-  return connect_ports(source_key, output, sink_key, input);
+void wnode_ports_connect(NodeKey source_key, PortKey output, NodeKey sink_key, PortKey input) {
+  return node_ports_connect(source_key, output, sink_key, input);
 };
 
-NodeKey wcreate_node(int node_type) {
-  return create_node(node_type);
+NodeKey wnode_create(int node_type) {
+  // printf("NODE CREATE %i\n", node_type);
+  return node_create(node_type);
 };
 
-void* wget_node_outputs(NodeKey node_key) {
-  return get_node_output(node_key, 0);
+void* wnode_read_outputs(NodeKey node_key) {
+  return node_read_output(node_key, 0);
 }
 
 void initialize(int node_count, int block_size) {
-  printf("INITIALIZE %i nodes \n", node_count);
-  initialize_graph(node_count);
-  declare_node_builder(0, &setup_fixed_4);
-  declare_node_builder(1, &setup_plus_10);
-  declare_node_builder(2, &setup_times_3);
-  declare_node_builder(3, &setup_triangle);
+  // printf("INITIALIZE %i nodes \n", node_count);
+  graph_initialize(node_count);
+  node_declare_builder(0, &setup_fixed_4);
+  node_declare_builder(1, &setup_plus_10);
+  node_declare_builder(2, &setup_times_3);
+  node_declare_builder(3, &setup_triangle);
   BLOCK_SIZE = block_size;
   BLOCK = new float[BLOCK_SIZE];
 }

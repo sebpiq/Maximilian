@@ -8,9 +8,6 @@ on a graph.
 #include <list>
 using namespace std;
 
-typedef void (*TraversalCallback)(int, int);
-
-
 class graph{
 	int V;				// Total no. of vertices
 	list<int> *adj;		// Pointer to the array of adjacency lists of the graph
@@ -23,14 +20,15 @@ public:
 		delete [] adj;
 	}
 	void addEdge(int u,int v);	// adds an edge between u and v
-	void bfs(int s, TraversalCallback callback);			// do a breadth first search on the graph from s
+	void bfs(int s, int* traversal);			// do a breadth first search on the graph from s
 };
 
 void graph::addEdge(int u,int v){
 	adj[u].push_back(v);
 }
 
-void graph::bfs(int s, TraversalCallback callback){
+void graph::bfs(int s, int* traversal){
+	int traversal_counter = 0;
 	bool *visited = new bool[V];	// create an array to store which vertices are visited
 	queue<int> q;		// queue for bfs
 	list<int>::iterator it;	// Adjacency list iterator
@@ -39,7 +37,7 @@ void graph::bfs(int s, TraversalCallback callback){
 		visited[i] = false;
 	}
 
-    callback(-1, s);
+    traversal[traversal_counter++] = s;
 	q.push(s);	// push the starting node to be visited
 	visited[s] = true;	// visit the starting node
 	
@@ -53,7 +51,7 @@ void graph::bfs(int s, TraversalCallback callback){
 			// and is not already visited
 			if(visited[*it] == false){
 				visited[*it] = true;	// visit it
-                callback(u, *it);
+				traversal[traversal_counter++] = *it;
 				q.push(*it);	// enqueue it to the queue
 			}
 		}

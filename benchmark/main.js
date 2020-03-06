@@ -1,8 +1,17 @@
 import { createGraph, plotSignal, plotLegend } from './common/graphs.js'
 
-const TOTAL_OPERATIONS_PER_RUN = 100000000
-const COMPUTE_ITERATIONS = [8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072]
-const COLORS = ['red', 'green', 'blue', 'brown', 'yellow', 'orange']
+const TOTAL_OPERATIONS_PER_RUN = 10000000
+const COMPUTE_ITERATIONS = [256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072]
+const COLORS = ['red', 'green', 'blue', 'black', 'purple', 'orange']
+const BENCHMARK_WORKERS = [
+    'worker.wasmTriangle.js', 
+    'worker.maxiWasmTriangle.js', 
+    'worker.myDspTriangleVector.js',
+    'worker.myDspTriangleVectorBaseline.js',
+    'worker.wasmTriangleVector.js',
+    'worker.pureJsTriangle.js',
+]
+const BASELINE_FUNCTION = _.last(BENCHMARK_WORKERS)
 
 const displayResults = (runConfigs, benchmarkResults) => {
     const x = _.map(runConfigs, 'computeIterations')
@@ -13,10 +22,10 @@ const displayResults = (runConfigs, benchmarkResults) => {
             seriesMeans[functionName].push(meanDuration)
         })
     })
-    const referenceSamples = seriesMeans.pureJsTriangle
+    const referenceSamples = seriesMeans[BASELINE_FUNCTION]
     const seriesRatio = _.mapValues(seriesMeans, 
         samples => 
-            samples.map((value, i) => value ? referenceSamples[i] / value: 0.00000001) // to avoid division by zero and log error
+            samples.map((value, i) => referenceSamples[i] / value)
     )
 
     const graph = createGraph(document.querySelector('#mainPlot'), {
@@ -48,24 +57,30 @@ const displayResults = (runConfigs, benchmarkResults) => {
 
 } 
 
-const runBenchmark = (config) => {
-    const benchmarkWorker = new Worker('./benchmark.worker.js', { type: 'module' })
+const runFunction = (workerUrl, config) => {
+    const benchmarkWorker = new Worker(workerUrl, { type: 'module' })
 
     benchmarkWorker.postMessage({
-        operation: 'run',
-        payload: {
-            sampleRate: 44100,
-            previewSampleSize: 44100 / 40 * 3,
-            ...config
-        }
+        sampleRate: 44100,
+        previewSampleSize: 44100 / 40 * 3,
+        name: workerUrl,
+        ...config
     })
 
     return new Promise((resolve) => {
         benchmarkWorker.onmessage = (message) => {
             benchmarkWorker.terminate()
-            resolve(message.data.results)
+            resolve(message.data)
         }
     })
+}
+
+const runBenchmark = async (config) => {
+    const results = []
+    for (let workerUrl of BENCHMARK_WORKERS) {
+        results.push(await runFunction(workerUrl, config))
+    }
+    return results
 }
 
 const main = async () => {
@@ -78,6 +93,7 @@ const main = async () => {
     for (let runConfig of runConfigs) {
         benchmarkResults.push(await runBenchmark(runConfig))
     }
+    console.log(benchmarkResults)
     displayResults(runConfigs, benchmarkResults)
 }
 

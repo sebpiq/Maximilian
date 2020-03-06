@@ -14,9 +14,9 @@ if emcc \
   -s WASM=1 \
   -s "EXPORT_NAME='MyDsp'" \
   -s "BINARYEN_METHOD='native-wasm'" \
-  -s "EXPORTED_FUNCTIONS=['_wcreate_node', '_dsp_block', '_wconnect_ports', '_wget_node_outputs', '_initialize']" \
+  -s "EXPORTED_FUNCTIONS=['_wnode_create', '_dsp_block', '_wnode_ports_connect', '_wnode_read_outputs', '_initialize']" \
   -s "EXTRA_EXPORTED_RUNTIME_METHODS=['getValue']" \
-  -o build/MyDsp.mjs; 
+  -o build/MyDsp.js; 
 then
   echo "compilation succeeded"
 fi

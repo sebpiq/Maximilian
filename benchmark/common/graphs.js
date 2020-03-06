@@ -64,5 +64,7 @@ export const plotSignal = (graph, samples, style) => {
 export const plotLegend = (graph, name, color) => {
     graph.legend.append('tspan')
         .text(` ${name} `)
+        .attr('dy', `1em`)
+        .attr('x', 0)
         .style('fill', color)
 }
