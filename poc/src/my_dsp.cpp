@@ -5,10 +5,10 @@
 
 extern "C" {
   void initialize(int node_count, int block_size);
-  float* dsp_block(NodeKey root, NodeKey leaf);
-  NodeKey wnode_create(int node_type);
-  void wnode_ports_connect(NodeKey source_key, PortKey output, NodeKey sink_key, PortKey input);
-  void* wnode_read_outputs(NodeKey node_key);
+  float* dsp_block(NodeId root, NodeId leaf);
+  NodeId wnode_create(int node_type);
+  void wnode_ports_connect(NodeId source_id, PortId output, NodeId sink_id, PortId input);
+  void* wnode_read_outputs(NodeId node_id);
 }
 
 void triangle(maxiOsc* osc, float** inputs, float** outputs) {
@@ -24,14 +24,14 @@ Node* setup_triangle() {
   return node_pointer;
 }
 
-void fixed_4(float* state, float** inputs, float** outputs) {
+void fixed_40(float* state, float** inputs, float** outputs) {
   outputs[0][0] = 40;
 }
 
 Node* setup_fixed_4() {
   Node* node_pointer = new Node();
   node_pointer->outputs = (PortList) new float*[1] {new float[1]};
-  node_pointer->processor = (NodeProcessor) &fixed_4;
+  node_pointer->processor = (NodeProcessor) &fixed_40;
   return node_pointer;
 }
 
@@ -61,7 +61,7 @@ Node* setup_times_3() {
 
 int BLOCK_SIZE = 0;
 float* BLOCK;
-float* dsp_block(NodeKey root, NodeKey leaf) {
+float* dsp_block(NodeId root, NodeId leaf) {
   graph_compile(root);
   float* leaf_output = (float*) node_read_output(leaf, 0);
   for (int i = 0; i < BLOCK_SIZE; i++) {
@@ -71,16 +71,16 @@ float* dsp_block(NodeKey root, NodeKey leaf) {
   return BLOCK;
 };
 
-void wnode_ports_connect(NodeKey source_key, PortKey output, NodeKey sink_key, PortKey input) {
-  return node_ports_connect(source_key, output, sink_key, input);
+void wnode_ports_connect(NodeId source_id, PortId output, NodeId sink_id, PortId input) {
+  return node_ports_connect(source_id, output, sink_id, input);
 };
 
-NodeKey wnode_create(int node_type) {
+NodeId wnode_create(int node_type) {
   return node_create(node_type);
 };
 
-void* wnode_read_outputs(NodeKey node_key) {
-  return node_read_output(node_key, 0);
+void* wnode_read_outputs(NodeId node_id) {
+  return node_read_output(node_id, 0);
 }
 
 void initialize(int node_count, int block_size) {

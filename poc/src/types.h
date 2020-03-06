@@ -2,8 +2,9 @@
 #define TYPES_H
 #include <map>
 
-typedef int NodeKey;
-typedef int PortKey;
+typedef int NodeType;
+typedef int NodeId;
+typedef int PortId;
 typedef void** PortList;
 
 typedef void(*NodeProcessor)(void*, PortList, PortList);
@@ -17,6 +18,6 @@ struct Node {
 
 typedef Node*(*NodeBuilder)();
 
-typedef std::map<int, NodeBuilder> NodeBuilders;
+typedef std::map<NodeType, NodeBuilder> NodeBuilders;
 
 #endif /* TYPES_H */

@@ -4,7 +4,7 @@ const engine = Engine()
 engine.then(() => {
     engine._initialize(10, 16)
         
-    const node_1 = engine._wnode_create(0) // 4
+    const node_1 = engine._wnode_create(0) // 40
     
     const node_A_2 = engine._wnode_create(1) // +10
     const node_A_3 = engine._wnode_create(1) // +10
@@ -32,13 +32,13 @@ engine.then(() => {
     
     outputsPointer = engine._wnode_read_outputs(node_A_3)
     outputValue = engine.getValue(outputsPointer, 'float')
-    assert.equal(outputValue, 24)
+    assert.equal(outputValue, 60)
 
     outputsPointer = engine._wnode_read_outputs(node_A_4)
     outputValue = engine.getValue(outputsPointer, 'float')
-    assert.equal(outputValue, 72)
+    assert.equal(outputValue, 180)
 
     outputsPointer = engine._wnode_read_outputs(node_B_2)
     outputValue = engine.getValue(outputsPointer, 'float')
-    assert.equal(outputValue, 12)
+    assert.equal(outputValue, 120)
 })
