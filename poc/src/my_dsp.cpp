@@ -12,7 +12,6 @@ extern "C" {
 }
 
 void triangle(maxiOsc* osc, float** inputs, float** outputs) {
-  // printf("triangle\n");
   outputs[0][0] = osc->triangle(inputs[0][0]);
 }
 
@@ -26,7 +25,6 @@ Node* setup_triangle() {
 }
 
 void fixed_4(float* state, float** inputs, float** outputs) {
-  // printf("fixed_value %p \n", outputs[0]);
   outputs[0][0] = 40;
 }
 
@@ -38,7 +36,6 @@ Node* setup_fixed_4() {
 }
 
 void plus_10(float* state, float** inputs, float** outputs) {
-  // printf("%p %f plus_10\n", inputs[0], inputs[0][0]);
   outputs[0][0] = inputs[0][0] + 10;
 }
 
@@ -51,7 +48,6 @@ Node* setup_plus_10() {
 }
 
 void times_3(float* state, float** inputs, float** outputs) {
-  // printf("times_3\n");
   outputs[0][0] = inputs[0][0] * 3;
 }
 
@@ -66,10 +62,8 @@ Node* setup_times_3() {
 int BLOCK_SIZE = 0;
 float* BLOCK;
 float* dsp_block(NodeKey root, NodeKey leaf) {
-  // printf("DSP BLOCK START\n");
   graph_compile(root);
   float* leaf_output = (float*) node_read_output(leaf, 0);
-  // printf("DSP BLOCK %i\n", BLOCK_SIZE);
   for (int i = 0; i < BLOCK_SIZE; i++) {
     dsp_loop(root);
     BLOCK[i] = *leaf_output;
@@ -82,7 +76,6 @@ void wnode_ports_connect(NodeKey source_key, PortKey output, NodeKey sink_key, P
 };
 
 NodeKey wnode_create(int node_type) {
-  // printf("NODE CREATE %i\n", node_type);
   return node_create(node_type);
 };
 
@@ -91,7 +84,6 @@ void* wnode_read_outputs(NodeKey node_key) {
 }
 
 void initialize(int node_count, int block_size) {
-  // printf("INITIALIZE %i nodes \n", node_count);
   graph_initialize(node_count);
   node_declare_builder(0, &setup_fixed_4);
   node_declare_builder(1, &setup_plus_10);

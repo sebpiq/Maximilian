@@ -60,13 +60,6 @@ void node_ports_connect(NodeKey source_key, PortKey output_key, NodeKey sink_key
   DSP_GRAPH->addEdge(source_key, sink_key);
 }
 
-// void _run_node(NodeKey parent_key, NodeKey child_key) {
-//   Node node = NODES[child_key];
-//   Node parent = NODES[parent_key];
-//   // printf("%i ---> %i\n", parent_key, child_key);
-  
-// }
-
 void dsp_loop(NodeKey root) {
   int node_count = _get_node_count();
   // printf("%p %p", &FLATTENED_GRAPH[0], &NODES[0]);
