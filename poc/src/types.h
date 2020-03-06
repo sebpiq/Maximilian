@@ -1,20 +1,29 @@
 #ifndef TYPES_H
 #define TYPES_H
 #include <map>
+#include <vector>
 
 typedef int NodeType;
 typedef int NodeId;
 typedef int PortId;
-typedef void** PortList;
+typedef float* PortList;
+typedef float** InputList;
 
 typedef void(*NodeProcessor)(void*, PortList, PortList);
 
 struct Node {
-  NodeProcessor processor;
+  NodeType node_type;
   void* state;
-  PortList inputs;
+  InputList inputs;
   PortList outputs;
 };
+
+struct Operation {
+  int frame_index;
+  Node* node_pointer;
+};
+
+typedef std::vector<Operation*>::iterator OperationPointerIterator;
 
 typedef Node*(*NodeBuilder)();
 

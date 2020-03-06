@@ -15,6 +15,7 @@ onmessage = (message) => {
         const nodeConstant = myDspModule._wnode_create(0)
         const nodeTriangle = myDspModule._wnode_create(3)
         myDspModule._wnode_ports_connect(nodeConstant, 0, nodeTriangle, 0)    
+        myDspModule._wgraph_compile(nodeConstant, nodeTriangle)
         postMessage(
             runFunction(myDspTriangleVector, config, { 
                 myDspModule,
