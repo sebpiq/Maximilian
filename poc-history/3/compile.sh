@@ -19,8 +19,6 @@ if emcc \
   -o "build/MyDsp.$1"; 
 then
   echo "compilation succeeded"
-else
-  exit 1;
 fi
 
 # -s "EXPORTED_FUNCTIONS=['_state_management']" \

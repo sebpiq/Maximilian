@@ -10,7 +10,8 @@ const BENCHMARK_WORKERS = [
     // 'worker.myDspTriangleVectorBaseline.js',
     // 'worker.maxiWasmTriangle.js', 
     // 'poc-history/1/worker.triangle.js',
-    'poc-history/2/worker.triangle.js',
+    // 'poc-history/2/worker.triangle.js',
+    'poc-history/3/worker.triangle.js',
     'worker.pureJsDsp.js',
 ]
 const BASELINE_FUNCTION = _.last(BENCHMARK_WORKERS)

@@ -72,12 +72,12 @@ NodeId node_create(int node_type) {
   return _store_node(node_builder());
 }
 
-void node_ports_connect(NodeId source_id, NodeId sink_id) {
+void node_ports_connect(NodeId source_id, PortId output_id, NodeId sink_id, PortId input_id) {
   // printf("CONNECT %i -> %i \n", source, sink);
-  Node source = *_get_node_pointer(source_id);
-  Node sink = *_get_node_pointer(sink_id);
+  Node* source = _get_node_pointer(source_id);
+  Node* sink = _get_node_pointer(sink_id);
   DSP_GRAPH->addEdge(source_id, sink_id);
-  sink.input_pointer = &source.output;
+  sink->input_pointers[input_id] = &(source->output[output_id]);
 }
 
 void* node_state_get_pointer(NodeId node_id) {

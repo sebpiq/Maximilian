@@ -7,7 +7,7 @@ extern "C" {
   void initialize(int node_count, int block_size);
   float* dsp_block(NodeId root);
   NodeId wnode_create(int node_type);
-  void wnode_ports_connect(NodeId source_id, NodeId sink_id);
+  void wnode_ports_connect(NodeId source_id, PortId output_id, NodeId sink_id, PortId input_id);
   void* wnode_state_get_pointer(NodeId node_id);
   void wgraph_compile(NodeId root);
 }
@@ -15,32 +15,34 @@ extern "C" {
 int BLOCK_SIZE = 0;
 float* BLOCK;
 float* dsp_block(NodeId root) {
-  Node node;
-  Operation operation;
+  Node* node;
+  Operation* operation;
   OperationPointerIterator it = operations_get_iterator_begin();
   OperationPointerIterator it_end = operations_get_iterator_end();
 
   for (it = it; it != it_end; it++ ) {
-    operation = **it;
-    node = *(operation.node_pointer);
-    // printf("LOOP %i\n", node.node_type);
+    operation = *it;
+    node = operation->node_pointer;
+    // printf("LOOP %i\n", node->node_type);
 
-    switch (node.node_type) {
+    switch (node->node_type) {
       case 0:
-        node.output = 40;
+        node->output[0] = 40;
         break;
       case 1:
-        node.output = *node.input_pointer + 10;
+        // printf("LOOP +10 %f \n", *node->input_pointers[0]);
+        node->output[0] = *node->input_pointers[0] + 10;
         break;
       case 2:
-        node.output = *node.input_pointer * 3;
+        node->output[0] = *node->input_pointers[0] * 3;
         break;
       case 3:
-        node.output = ((maxiOsc*) node.state)->triangle(*node.input_pointer);
+        node->output[0] = ((maxiOsc*) node->state)->triangle(*node->input_pointers[0]);
+        // printf("TRI %f \n", node->output[0]);
         break;
       case 4:
-        // printf("LOOP %i -> %f\n", operation.frame_index, *node.input_pointer);
-        ((float*) node.state)[operation.frame_index] = *node.input_pointer;
+        // printf("LOOP %i -> %f\n", operation->frame_index, *node->input_pointers[0]);
+        ((float*) node->state)[operation->frame_index] = *node->input_pointers[0];
         break;
     }
   }
@@ -51,18 +53,23 @@ float* dsp_block(NodeId root) {
 Node* setup_fixed_40() {
   Node* node_pointer = new Node();
   node_pointer->node_type = 0;
+  node_pointer->output = new float[1];
   return node_pointer;
 }
 
 Node* setup_plus_10() {
   Node* node_pointer = new Node();
   node_pointer->node_type = 1;
+  node_pointer->input_pointers = new float*[1];
+  node_pointer->output = new float[1];
   return node_pointer;
 }
 
 Node* setup_times_3() {
   Node* node_pointer = new Node();
   node_pointer->node_type = 2;
+  node_pointer->input_pointers = new float*[1];
+  node_pointer->output = new float[1];
   return node_pointer;
 }
 
@@ -70,6 +77,8 @@ Node* setup_triangle() {
   Node* node_pointer = new Node();
   node_pointer->state = new maxiOsc();
   node_pointer->node_type = 3;
+  node_pointer->input_pointers = new float*[1];
+  node_pointer->output = new float[1];
   return node_pointer;
 }
 
@@ -77,12 +86,13 @@ Node* setup_buffer() {
   Node* node_pointer = new Node();
   node_pointer->state = new float[BLOCK_SIZE + 1];
   node_pointer->node_type = 4;
+  node_pointer->input_pointers = new float*[1];
   return node_pointer;
 }
 
-void wnode_ports_connect(NodeId source_id, NodeId sink_id) {
+void wnode_ports_connect(NodeId source_id, PortId output_id, NodeId sink_id, PortId input_id) {
   // printf("NODE PORTS CONNECT %i %i -> %i %i\n", source_id, output, sink_id, output);
-  return node_ports_connect(source_id, sink_id);
+  return node_ports_connect(source_id, output_id, sink_id, input_id);
 };
 
 NodeId wnode_create(int node_type) {

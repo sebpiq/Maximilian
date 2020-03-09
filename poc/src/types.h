@@ -5,14 +5,15 @@
 
 typedef int NodeType;
 typedef int NodeId;
+typedef int PortId;
 
 typedef void(*NodeProcessor)(void*);
 
 struct Node {
   NodeType node_type;
   void* state;
-  float output;
-  float* input_pointer;
+  float** input_pointers;
+  float* output;
 };
 
 struct Operation {
