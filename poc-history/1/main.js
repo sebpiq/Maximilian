@@ -3,12 +3,11 @@ const Engine = require('./build/MyDsp.js')
 const engine = Engine()
 
 const BLOCK_SIZE = 16
-const CONSTANT = 40
 
 engine.then(() => {
     engine._initialize(10, BLOCK_SIZE)
         
-    const node_1 = engine._wnode_create(0) // CONSTANT
+    const node_1 = engine._wnode_create(0) // 4410
     
     const node_A_2 = engine._wnode_create(1) // +10
     const node_A_3 = engine._wnode_create(1) // +10
@@ -41,13 +40,13 @@ engine.then(() => {
     
     outputsPointer = engine._wnode_output_get_pointer(node_A_3)
     outputValue = engine.getValue(outputsPointer, 'float')
-    assert.equal(outputValue, CONSTANT + 10 + 10)
+    assert.equal(outputValue, 4410 + 10 + 10)
 
     outputsPointer = engine._wnode_output_get_pointer(node_A_4)
     outputValue = engine.getValue(outputsPointer, 'float')
-    assert.equal(outputValue, (CONSTANT + 10 + 10) * 3)
+    assert.equal(outputValue, (4410 + 10 + 10) * 3)
 
     outputsPointer = engine._wnode_output_get_pointer(node_B_2)
     outputValue = engine.getValue(outputsPointer, 'float')
-    assert.equal(outputValue, CONSTANT * 3)
+    assert.equal(outputValue, 4410 * 3)
 })
