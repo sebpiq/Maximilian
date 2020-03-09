@@ -1,7 +1,8 @@
 import { createGraph, plotSignal, plotLegend } from './common/graphs.js'
 
-const TOTAL_OPERATIONS_PER_RUN = 10000000
-const COMPUTE_ITERATIONS = [256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 200000]
+const TOTAL_OPERATIONS_PER_RUN = 1000000
+// const COMPUTE_ITERATIONS = [256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 200000]
+const COMPUTE_ITERATIONS = [256, 2048, 32768, 200000]
 const COLORS = ['red', 'green', 'blue', 'black', 'purple', 'orange']
 const BENCHMARK_WORKERS = [
     // 'worker.wasmTriangle.js', 
@@ -9,10 +10,11 @@ const BENCHMARK_WORKERS = [
     // 'worker.wasmTriangleVector.js',
     // 'worker.myDspTriangleVectorBaseline.js',
     // 'worker.maxiWasmTriangle.js', 
-    // 'poc-history/1/worker.triangle.js',
     // 'poc-history/2/worker.triangle.js',
-    'poc-history/3/worker.triangle.js',
-    'worker.pureJsDsp.js',
+    // 'poc-history/3/worker.triangle.js',
+    // 'poc-history/4/worker.triangle.js',
+    'poc-history/1/worker.triangle.js',
+    // 'worker.pureJsDsp.js',
 ]
 const BASELINE_FUNCTION = _.last(BENCHMARK_WORKERS)
 

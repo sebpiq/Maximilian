@@ -21,7 +21,10 @@ export const createGraph = (container, {size, xValues, xScale, yScale}) => {
 
     // Define the axes
     const xAxis = d3.axisBottom(xScale).tickFormat(d3.format(".0s"))
-    const yAxis = d3.axisLeft(yScale).ticks(5).tickFormat(d3.format(".2f"))
+    const yScaleInterpolate = d3.interpolateNumber(...yScale.domain())
+    const yAxis = d3.axisLeft(yScale)
+        .tickValues(_.range(10).map((i) => yScaleInterpolate(i / 10)))
+        .tickFormat(d3.format(".2f"))//.tickFormat(d3.format(".2f"))
 
     // Add the X Axis
     plotContainer.append('g')

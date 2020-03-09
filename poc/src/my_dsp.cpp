@@ -15,34 +15,30 @@ extern "C" {
 int BLOCK_SIZE = 0;
 float* BLOCK;
 float* dsp_block(NodeId root) {
-  Node* node;
-  Operation* operation;
+  Node node;
+  Operation operation;
   OperationPointerIterator it = operations_get_iterator_begin();
   OperationPointerIterator it_end = operations_get_iterator_end();
 
   for (it = it; it != it_end; it++ ) {
-    operation = *it;
-    node = operation->node_pointer;
-    // printf("LOOP %i\n", node->node_type);
+    operation = **it;
+    node = *(operation.node_pointer);
 
-    switch (node->node_type) {
+    switch (node.node_type) {
       case 0:
-        node->output[0] = 40;
+        node.output[0] = 40;
         break;
       case 1:
-        // printf("LOOP +10 %f \n", *node->input_pointers[0]);
-        node->output[0] = *node->input_pointers[0] + 10;
+        node.output[0] = *node.input_pointers[0] + 10;
         break;
       case 2:
-        node->output[0] = *node->input_pointers[0] * 3;
+        node.output[0] = *node.input_pointers[0] * 3;
         break;
       case 3:
-        node->output[0] = ((maxiOsc*) node->state)->triangle(*node->input_pointers[0]);
-        // printf("TRI %f \n", node->output[0]);
+        node.output[0] = ((maxiOsc*) node.state)->triangle(*node.input_pointers[0]);
         break;
       case 4:
-        // printf("LOOP %i -> %f\n", operation->frame_index, *node->input_pointers[0]);
-        ((float*) node->state)[operation->frame_index] = *node->input_pointers[0];
+        ((float*) node.state)[operation.frame_index] = *node.input_pointers[0];
         break;
     }
   }
