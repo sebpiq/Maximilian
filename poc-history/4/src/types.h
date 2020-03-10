@@ -7,9 +7,8 @@ typedef int NodeType;
 typedef int NodeId;
 typedef int PortId;
 
-typedef float Sample;
-typedef Sample** InputPointers;
-typedef Sample* Outputs;
+typedef float** InputPointers;
+typedef float* Outputs;
 typedef void* State;
 
 typedef void(*NodeProcessor)(State, InputPointers, Outputs, int);

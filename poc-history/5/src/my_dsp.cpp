@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include "types.h"
 #include "engine.h"
-#include "maximilian.h"
 
 extern "C" {
   void initialize(int node_count, int block_size);
@@ -28,10 +27,10 @@ void dsp_block(NodeId root) {
     switch (node.node_type) {
       // case 0, nothing to do
       case 1:
-        node.outputs[0] = *node.input_pointers[0] + 10.0;
+        node.outputs[0] = *node.input_pointers[0] + 10;
         break;
       case 2:
-        node.outputs[0] = *node.input_pointers[0] * 3.0;
+        node.outputs[0] = *node.input_pointers[0] * 3;
         break;
       case 3:
         {
@@ -40,9 +39,9 @@ void dsp_block(NodeId root) {
           if ( phase >= 1.0 ) phase -= 1.0;
           phase += 1./(SAMPLE_RATE/(*node.input_pointers[0]));
           if (phase <= 0.5 ) {
-            node.outputs[0] =(phase - 0.25) * 4.0;
+            node.outputs[0] =(phase - 0.25) * 4;
           } else {
-            node.outputs[0] =((1.0-phase) - 0.25) * 4.0;
+            node.outputs[0] =((1.0-phase) - 0.25) * 4;
           }
           ((float*) node.state)[0] = phase;
           break;
