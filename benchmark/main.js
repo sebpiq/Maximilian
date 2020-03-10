@@ -14,6 +14,7 @@ const BENCHMARK_WORKERS = [
     // 'poc-history/3/worker.triangle.js',
     // 'poc-history/4/worker.triangle.js',
     'poc-history/1/worker.triangle.js',
+    'worker.compiledJsDsp.js',
     'worker.pureJsDsp.js',
 ]
 const BASELINE_FUNCTION = _.last(BENCHMARK_WORKERS)
