@@ -1,8 +1,8 @@
 import { createGraph, plotSignal, plotLegend } from './common/graphs.js'
 
 const TOTAL_OPERATIONS_PER_RUN = 1000000
-// const COMPUTE_ITERATIONS = [256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 200000]
-const COMPUTE_ITERATIONS = [256, 2048, 32768, 200000]
+const COMPUTE_ITERATIONS = [256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 200000]
+// const COMPUTE_ITERATIONS = [256, 2048, 32768, 50000, 200000]
 const COLORS = ['red', 'green', 'blue', 'black', 'purple', 'orange']
 const BENCHMARK_WORKERS = [
     // 'worker.wasmTriangle.js', 
@@ -14,9 +14,28 @@ const BENCHMARK_WORKERS = [
     // 'poc-history/3/worker.triangle.js',
     // 'poc-history/4/worker.triangle.js',
     'poc-history/1/worker.triangle.js',
-    // 'worker.pureJsDsp.js',
+    'worker.pureJsDsp.js',
 ]
 const BASELINE_FUNCTION = _.last(BENCHMARK_WORKERS)
+
+let PROGRESS = {
+    final: 0,
+    current: 0
+}
+const initializeProgress = (count) => {
+    PROGRESS.final = count
+    PROGRESS.current = 0
+    displayProgress()
+}
+
+const updateProgress = () => {
+    PROGRESS.current++
+    displayProgress()
+}
+
+const displayProgress = () => {
+    document.querySelector('#progress').innerHTML = `PROGRESS : ${PROGRESS.current} / ${PROGRESS.final}`
+}
 
 const displayResults = (runConfigs, benchmarkResults) => {
     const x = _.map(runConfigs, 'computeIterations')
@@ -84,6 +103,7 @@ const runBenchmark = async (config) => {
     const results = []
     for (let workerUrl of BENCHMARK_WORKERS) {
         results.push(await runFunction(workerUrl, config))
+        updateProgress()
     }
     return results
 }
@@ -94,6 +114,7 @@ const main = async () => {
             computeIterations, 
             functionIterations: TOTAL_OPERATIONS_PER_RUN / computeIterations 
         }))
+    initializeProgress(COMPUTE_ITERATIONS.length * BENCHMARK_WORKERS.length)
     const benchmarkResults = []
     for (let runConfig of runConfigs) {
         benchmarkResults.push(await runBenchmark(runConfig))

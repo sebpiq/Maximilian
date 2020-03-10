@@ -77,7 +77,7 @@ void node_ports_connect(NodeId source_id, PortId output_id, NodeId sink_id, Port
   Node* source = _get_node_pointer(source_id);
   Node* sink = _get_node_pointer(sink_id);
   DSP_GRAPH->addEdge(source_id, sink_id);
-  sink->input_pointers[input_id] = &(source->output[output_id]);
+  sink->input_pointers[input_id] = &(source->outputs[output_id]);
 }
 
 void* node_state_get_pointer(NodeId node_id) {

@@ -9,23 +9,23 @@ const SETTINGS = {
 class ConstantNode {
     constructor(value) {
         this.value = value
+        this.outputs = new Float32Array([value])
     }
-    tick() {
-        return this.value
-    }
+    tick() {}
 }
 
 class TriangleNode {
     constructor() {
         this.phase = 0
+        this.outputs = new Float32Array(1)
     }
-    tick(input) {
+    tick(inputNodes) {
         if ( this.phase >= 1.0 ) this.phase -= 1.0
-        this.phase += 1 / (SETTINGS.sampleRate/input)
+        this.phase += 1 / (SETTINGS.sampleRate/inputNodes[0].outputs[0])
         if (this.phase <= 0.5 ) {
-            return (this.phase - 0.25) * 4
+            this.outputs[0] = (this.phase - 0.25) * 4
         } else {
-            return ((1 - this.phase) - 0.25) * 4
+            this.outputs[0] = ((1 - this.phase) - 0.25) * 4
         }
     }
 }
@@ -35,18 +35,17 @@ class BufferNode {
         this.buffer = buffer
         this.position = 0
     }
-    tick(input) {
-        this.buffer[this.position] = input
+    tick(inputNodes) {
+        this.buffer[this.position] = inputNodes[0].outputs[0]
         this.position++
     }
 }
 
-function pureJsDsp({ computeIterations, sampleRate }, { dspNodes }) {
+function pureJsDsp({ computeIterations }, { dspGraph }) {
     let i, j
     for (i = 0; i < computeIterations; i++) {
-        let output = null
-        for (j = 0; j < dspNodes.length; j++) {
-            output = dspNodes[j].tick(output)
+        for (j = 0; j < dspGraph.length; j++) {
+            dspGraph[j][0].tick(dspGraph[j][1])
         }
     }
 }
@@ -55,14 +54,18 @@ onmessage = (message) => {
     const config = message.data
     SETTINGS.sampleRate = config.sampleRate
     const output = new Float32Array(config.computeIterations)
-    const dspNodes = [
-        new ConstantNode(FREQUENCY),
-        new TriangleNode(),
-        new BufferNode(output)
+    const constantNode = new ConstantNode(FREQUENCY)
+    const triNode = new TriangleNode()
+    const bufferNode = new BufferNode(output)
+    // [node, [nodeInput1, ...]]
+    const dspGraph = [
+        [constantNode, []],
+        [triNode, [constantNode]],
+        [bufferNode, [triNode]]
     ]
     postMessage(
         runFunction(pureJsDsp, config, { 
-            dspNodes, output
+            dspGraph, output
         })
     )
 }

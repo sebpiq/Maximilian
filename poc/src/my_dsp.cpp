@@ -26,16 +26,16 @@ float* dsp_block(NodeId root) {
 
     switch (node.node_type) {
       case 0:
-        node.output[0] = 40;
+        node.outputs[0] = 40;
         break;
       case 1:
-        node.output[0] = *node.input_pointers[0] + 10;
+        node.outputs[0] = *node.input_pointers[0] + 10;
         break;
       case 2:
-        node.output[0] = *node.input_pointers[0] * 3;
+        node.outputs[0] = *node.input_pointers[0] * 3;
         break;
       case 3:
-        node.output[0] = ((maxiOsc*) node.state)->triangle(*node.input_pointers[0]);
+        node.outputs[0] = ((maxiOsc*) node.state)->triangle(*node.input_pointers[0]);
         break;
       case 4:
         ((float*) node.state)[operation.frame_index] = *node.input_pointers[0];
@@ -49,7 +49,7 @@ float* dsp_block(NodeId root) {
 Node* setup_fixed_40() {
   Node* node_pointer = new Node();
   node_pointer->node_type = 0;
-  node_pointer->output = new float[1];
+  node_pointer->outputs = new float[1];
   return node_pointer;
 }
 
@@ -57,7 +57,7 @@ Node* setup_plus_10() {
   Node* node_pointer = new Node();
   node_pointer->node_type = 1;
   node_pointer->input_pointers = new float*[1];
-  node_pointer->output = new float[1];
+  node_pointer->outputs = new float[1];
   return node_pointer;
 }
 
@@ -65,7 +65,7 @@ Node* setup_times_3() {
   Node* node_pointer = new Node();
   node_pointer->node_type = 2;
   node_pointer->input_pointers = new float*[1];
-  node_pointer->output = new float[1];
+  node_pointer->outputs = new float[1];
   return node_pointer;
 }
 
@@ -74,7 +74,7 @@ Node* setup_triangle() {
   node_pointer->state = new maxiOsc();
   node_pointer->node_type = 3;
   node_pointer->input_pointers = new float*[1];
-  node_pointer->output = new float[1];
+  node_pointer->outputs = new float[1];
   return node_pointer;
 }
 
@@ -87,7 +87,7 @@ Node* setup_buffer() {
 }
 
 void wnode_ports_connect(NodeId source_id, PortId output_id, NodeId sink_id, PortId input_id) {
-  // printf("NODE PORTS CONNECT %i %i -> %i %i\n", source_id, output, sink_id, output);
+  // printf("NODE PORTS CONNECT %i %i -> %i %i\n", source_id, outputs, sink_id, outputs);
   return node_ports_connect(source_id, output_id, sink_id, input_id);
 };
 

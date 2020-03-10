@@ -7,13 +7,18 @@ typedef int NodeType;
 typedef int NodeId;
 typedef int PortId;
 
-typedef void(*NodeProcessor)(void*);
+typedef float** InputPointers;
+typedef float* Outputs;
+typedef void* State;
+
+typedef void(*NodeProcessor)(State, InputPointers, Outputs, int);
 
 struct Node {
   NodeType node_type;
-  void* state;
-  float** input_pointers;
-  float* output;
+  State state;
+  InputPointers input_pointers;
+  Outputs outputs;
+  NodeProcessor processor;
 };
 
 struct Operation {
