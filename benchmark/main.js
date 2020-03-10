@@ -1,6 +1,6 @@
 import { createGraph, plotSignal, plotLegend } from './common/graphs.js'
 
-const TOTAL_OPERATIONS_PER_RUN = 1000000
+const TOTAL_OPERATIONS_PER_RUN = 50000000
 const COMPUTE_ITERATIONS = [256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 200000]
 // const COMPUTE_ITERATIONS = [256, 2048, 32768, 50000, 200000]
 const COLORS = ['red', 'green', 'blue', 'black', 'purple', 'orange']

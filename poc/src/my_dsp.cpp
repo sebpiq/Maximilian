@@ -25,9 +25,7 @@ float* dsp_block(NodeId root) {
     node = *(operation.node_pointer);
 
     switch (node.node_type) {
-      case 0:
-        node.outputs[0] = 40;
-        break;
+      // case 0, nothing to do
       case 1:
         node.outputs[0] = *node.input_pointers[0] + 10;
         break;
@@ -50,6 +48,7 @@ Node* setup_fixed_40() {
   Node* node_pointer = new Node();
   node_pointer->node_type = 0;
   node_pointer->outputs = new float[1];
+  node_pointer->outputs[0] = 40.0;
   return node_pointer;
 }
 
