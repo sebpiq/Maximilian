@@ -1,0 +1,20 @@
+{
+  "name": "worker.assemblyscript",
+  "version": "1.0.0",
+  "description": "",
+  "main": "worker.assemblyScript.js",
+  "scripts": {
+    "build": "npx webpack-cli --mode development"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@assemblyscript/loader": "^0.9.3",
+    "assemblyscript": "^0.9.3",
+    "requirejs": "^2.3.6"
+  },
+  "devDependencies": {
+    "webpack": "^4.42.0",
+    "webpack-cli": "^3.3.11"
+  }
+}
