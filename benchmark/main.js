@@ -1,21 +1,25 @@
-import { createGraph, plotSignal, plotLegend } from './common/graphs.js'
+import { createGraph, plotSignal, plotLegend } from './common/graphs.mjs'
 
-const TOTAL_OPERATIONS_PER_RUN = 5000000
+const TOTAL_OPERATIONS_PER_RUN = 500000000
 // const COMPUTE_ITERATIONS = [256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 200000]
 const COMPUTE_ITERATIONS = [256, 2048, 32768, 50000, 200000]
 const COLORS = ['red', 'green', 'blue', 'black', 'purple', 'orange']
 const BENCHMARK_WORKERS = [
-    // 'worker.wasmTriangle.js', 
-    'worker.myDspTriangleVector.js',
-    // 'worker.wasmTriangleVector.js',
-    // 'worker.maxiWasmTriangle.js', 
-    // 'poc-history/2/worker.triangle.js',
-    // 'poc-history/3/worker.triangle.js',
-    // 'poc-history/4/worker.triangle.js',
-    'poc-history/5/worker.triangle.js',
-    // 'poc-history/1/worker.triangle.js',
-    // 'worker.compiledJsDsp.js',
-    'worker.pureJsDsp.js',
+    // 'worker.wasmTriangle.mjs', 
+    // 'worker.wasmTriangleVector.mjs',
+    // 'worker.maxiWasmTriangle.mjs', 
+    
+    // 'poc-history/1/worker.triangle.mjs',
+    // 'poc-history/2/worker.triangle.mjs',
+    // 'poc-history/3/worker.triangle.mjs',
+    // 'worker.myDspTriangleVector.mjs',
+
+
+    'poc-history/5/worker.triangle.mjs',
+    // 'worker.compiledJsDsp.mjs',
+    'worker.assemblyScript.js',
+    'worker.pureJsDsp.mjs',
+    'poc-history/4/worker.triangle.mjs',
 ]
 const BASELINE_FUNCTION = _.last(BENCHMARK_WORKERS)
 
@@ -83,7 +87,11 @@ const displayResults = (runConfigs, benchmarkResults) => {
 } 
 
 const runFunction = (workerUrl, config) => {
-    const benchmarkWorker = new Worker(workerUrl, { type: 'module' })
+    let workerOpts = {}
+    if (workerUrl.endsWith('.mjs')) {
+        workerOpts = { type: 'module' }
+    }
+    const benchmarkWorker = new Worker(workerUrl, workerOpts)
 
     benchmarkWorker.postMessage({
         sampleRate: 44100,
