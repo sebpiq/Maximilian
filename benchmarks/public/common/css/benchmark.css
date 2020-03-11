@@ -1,0 +1,29 @@
+body {
+    font-family: 'Roboto Mono', monospace;
+}
+
+.graph path.line {
+    stroke: blue;
+    fill: none;
+}
+
+.graph .axis text {
+    font-size: 10px;
+}
+
+.graph .legend text {
+    font-size: 10px;
+}
+
+.functionResult.previewHidden .graph {
+    display: none;
+}
+
+.functionResult .stats td {
+    color: purple;
+}
+
+.functionResult .stats th {
+    text-align: left;
+    padding-right: 1em;
+}

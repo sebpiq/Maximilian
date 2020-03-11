@@ -1,0 +1,52 @@
+<!doctype html>
+
+<html>
+    <head>
+        <link href="https://fonts.googleapis.com/css?family=Roboto+Mono&display=swap" rel="stylesheet">
+        <link href="/common/css/benchmark.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.15/lodash.min.js"></script>
+        <script src="https://d3js.org/d3.v5.min.js"></script>
+        <script type="module">
+            import runner from '/common/mjs/runner.mjs'
+            const TOTAL_OPERATIONS_PER_RUN = 500000
+            // const COMPUTE_ITERATIONS = [256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 200000]
+            const COMPUTE_ITERATIONS = [256, 2048, 32768, 50000, 200000]
+            
+            const BENCHMARK_WORKERS = [
+                'worker.DynamicDspEngine.mjs',
+                'worker.DynamicDspEngineMaxi.mjs',
+                'worker.compiledJsDsp.mjs',
+                'worker.assemblyScript.js',
+                'worker.pureJsDsp.mjs',
+            ]
+
+            runner({
+                blockSizes: COMPUTE_ITERATIONS,
+                totalOperationsPerRun: TOTAL_OPERATIONS_PER_RUN,
+                benchmarkWorkers: BENCHMARK_WORKERS
+            }).then(() => {
+                console.log('ALL DONE!!!')
+            })
+        </script>
+        <div id="progress"></div>
+        <div id="mainPlot">
+            <h2>Triangle wave</h2>
+            
+            <ul>
+                <li>
+                    <b>Y</b> Relative speed of different calculation methods as a ratio to a baseline (pureJsTriangle). 
+                Higher, is better.
+                </li>
+                <li>
+                    <b>X</b> Number of iterations for each run on the function (in other words, block size).
+                </li>
+            </ul>
+        </div>
+        <div id="previews">
+            <h2>Preview of generated data for each function</h2>
+        </div>
+    </head>
+    <body>
+        
+    </body>
+</html>
