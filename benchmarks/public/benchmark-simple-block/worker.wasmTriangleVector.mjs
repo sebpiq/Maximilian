@@ -1,5 +1,5 @@
 import { getFloat32Array } from '/common/mjs/wasm-utils.mjs'
-import { runFunction } from '/common/mjs/benchmarking.mjs'
+import { runFunction } from '/common/mjs/benchmarking-utils.mjs'
 import DspModule from  '/common/wasm/static-dsp/StaticDsp.mjs'
 
 const FREQUENCY = 40

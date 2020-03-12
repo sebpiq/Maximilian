@@ -74,7 +74,42 @@ const displayResults = (runnerConfig, benchmarkResults) => {
 
 } 
 
-const runFunction = (workerUrl, runParams) => {
+const runFunctionInAudioWorklet = async (workerUrl, runParams) => {
+    class BenchmarkNode extends AudioWorkletNode {  
+        constructor (audioContext, runParams, resolve, reject) {
+            super(audioContext, 'benchmark-processor', {      
+                numberOfInputs: 1,
+                numberOfOutputs: 1,
+                channelCount: 1,
+                processorOptions: runParams,
+            })
+            this.port.onmessage = event => {
+                this.disconnect()
+                audioContext.close()
+                resolve(event.data)
+            }
+            this.onprocessorerror = reject
+            this.port.start()
+        }
+    }
+
+    const audioContext = new AudioContext()
+    await audioContext.audioWorklet.addModule(workerUrl)
+    
+    return new Promise((resolve, reject) => {
+        const benchmarkNode = new BenchmarkNode(audioContext, {
+            sampleRate: 44100,
+            previewSampleSize: 44100 / 40 * 3,
+            name: workerUrl,
+            ...runParams
+        }, resolve, reject)
+        audioContext.resume()
+        // To start processing
+        benchmarkNode.connect(audioContext.destination)
+    })
+}
+
+const runFunctionInWorker = (workerUrl, runParams) => {
     let workerOpts = {}
     if (workerUrl.endsWith('.mjs')) {
         workerOpts = { type: 'module' }
@@ -97,6 +132,10 @@ const runFunction = (workerUrl, runParams) => {
 
 const runBenchmark = async (runnerConfig, runParams) => {
     const results = []
+    const runFunction = {
+        'worker': runFunctionInWorker,
+        'audioworklet': runFunctionInAudioWorklet
+    }[runnerConfig.mode]
     for (let workerUrl of runnerConfig.benchmarkWorkers) {
         results.push(await runFunction(workerUrl, runParams))
         updateProgress()

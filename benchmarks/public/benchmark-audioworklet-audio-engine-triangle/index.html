@@ -6,26 +6,40 @@
         <link href="/common/css/benchmark.css" rel="stylesheet">
         <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.15/lodash.min.js"></script>
         <script src="https://d3js.org/d3.v5.min.js"></script>
+        <style>
+            body.init > * {
+                display: none;
+            }
+            body #clickToStart {
+                display: none;
+            }
+            body.init #clickToStart {
+                display: block;
+            }
+        </style>
         <script type="module">
             import runner from '/common/mjs/runner.mjs'
-            runner({
-                // blockSizes: [256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 200000],
-                blockSizes: [256, 2048, 32768, 50000, 200000],
-                totalOperationsPerRun: 50000,
-                benchmarkWorkers: [
-                    'worker.DynamicDspEngine.mjs',
-                    'worker.DynamicDspEngineMaxi.mjs',
-                    'worker.compiledJsDsp.mjs',
-                    'worker.assemblyScript.js',
-                    'worker.pureJsDsp.mjs',
-                ],
-                mode: 'worker',
-            }).then(() => {
-                console.log('ALL DONE!!!')
-            })
+            document.body.onclick = () => {
+                document.body.classList.remove('init')
+                runner({
+                    blockSizes: [128, 1024, 2048, 4096, 8192, 16384],
+                    totalOperationsPerRun: 500000,
+                    benchmarkWorkers: [
+                        'worker.DynamicDspEngine.mjs',
+                        'worker.DynamicDspEngineMaxi.mjs',
+                        'worker.compiledJsDsp.mjs',
+                        'worker.pureJsDsp.mjs',
+                    ],
+                    mode: 'audioworklet'
+                }).then(() => {
+                    console.log('ALL DONE!!!')
+                })
+            }
+
         </script>
     </head>
-    <body>
+    <body class="init">
+        <div id="clickToStart">CLICK TO START</div>
         <div id="progress"></div>
         <div id="mainPlot">
             <h2>Audio Engines Triangle Wave</h2>

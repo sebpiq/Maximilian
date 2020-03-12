@@ -4,6 +4,7 @@ const STATE_PREFIX = 'State'
 
 let NODE_ID_COUNTER = -1
 
+
 export class NodeTemplate {
     
     constructor() {
@@ -32,15 +33,15 @@ export class NodeTemplate {
     }
 
     getState(name) {
-        return self[this.getStateId(name)]
+        return globalThis[this.getStateId(name)]
     }
 
     setState(name, value) {
-        self[this.getStateId(name)] = value
+        globalThis[this.getStateId(name)] = value
     }
 
     setOutput(outputPosition, value) {
-        self[this.getOutputId(outputPosition)] = value
+        globalThis[this.getOutputId(outputPosition)] = value
     }
 
     _createOutputs(count) {

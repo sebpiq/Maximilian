@@ -1,4 +1,4 @@
-import { runFunction } from '/common/mjs/benchmarking.mjs'
+import { runFunction } from '/common/mjs/benchmarking-utils.mjs'
 import { getFloat32Array } from '/common/mjs/wasm-utils.mjs'
 import DynamicDspEngine from '/common/wasm/dynamic-dsp-engine/DynamicDspEngine.mjs'
 

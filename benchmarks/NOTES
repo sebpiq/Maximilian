@@ -1,0 +1,9 @@
+benchmarking in audioworklet
+-------------------------------
+
+- performance not available (see pdf)
+- caching behavior
+
+- don't forget to take into account the necessity to copy dsp output buffer to the AudioWorklet node output buffer.
+
+From Stéphane Letz, benchmarking different compilation options for Faust and Wasm : https://faust.grame.fr/community/news/index.html#performances-of-audio-dsp-code-compiled-in-webassembly

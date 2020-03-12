@@ -1,9 +1,9 @@
 // We can't import ES6 modules directly in our worker, since we need to support `importScripts`. 
 // So we let webpack deal with this :
-import { runFunction } from '../public/common/mjs/benchmarking.mjs'
-import { NodeTemplate } from '../public/common/mjs/dsp-templates.mjs'
+import { runFunction } from '../public/common/mjs/benchmarking-utils.mjs'
+import * as dspEngineAsc from '../public/common/mjs/dsp-engine-eval-assemblyscript.mjs'
 self.runFunction = runFunction
-self.NodeTemplate = NodeTemplate
+Object.assign(self, dspEngineAsc)
 
 // REF : https://docs.assemblyscript.org/basics/loader
 const loader = require("@assemblyscript/loader")

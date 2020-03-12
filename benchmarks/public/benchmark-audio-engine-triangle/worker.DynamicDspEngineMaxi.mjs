@@ -1,5 +1,5 @@
 import { getFloat32Array } from '/common/mjs/wasm-utils.mjs'
-import { runFunction } from '/common/mjs/benchmarking.mjs'
+import { runFunction } from '/common/mjs/benchmarking-utils.mjs'
 import DynamicDspEngineMaxi from '/common/wasm/dynamic-dsp-engine-maxi/DynamicDspEngineMaxi.mjs'
 
 function myDspTriangleVector({ blockSize }, context) {

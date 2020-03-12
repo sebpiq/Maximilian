@@ -8,25 +8,23 @@
         <script src="https://d3js.org/d3.v5.min.js"></script>
         <script type="module">
             import runner from '/common/mjs/runner.mjs'
-            const TOTAL_OPERATIONS_PER_RUN = 500000
-            // const COMPUTE_ITERATIONS = [256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 200000]
-            const COMPUTE_ITERATIONS = [256, 2048, 32768, 50000, 200000]
-            
-            const BENCHMARK_WORKERS = [
-                'worker.wasmTriangleVector.mjs',
-                'worker.wasmTriangle.mjs', 
-                'worker.maxiWasmTriangle.mjs',
-                'worker.pureJsDsp.mjs',
-            ]
-
             runner({
-                blockSizes: COMPUTE_ITERATIONS,
-                totalOperationsPerRun: TOTAL_OPERATIONS_PER_RUN,
-                benchmarkWorkers: BENCHMARK_WORKERS
+                // blockSizes: [256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 200000],
+                blockSizes: [256, 2048, 32768, 50000, 200000],
+                totalOperationsPerRun: 500000,
+                benchmarkWorkers: [
+                    'worker.wasmTriangleVector.mjs',
+                    'worker.wasmTriangle.mjs', 
+                    'worker.maxiWasmTriangle.mjs',
+                    'worker.pureJsDsp.mjs',
+                ],
+                mode: 'worker'
             }).then(() => {
                 console.log('ALL DONE!!!')
             })
         </script>
+    </head>
+    <body>
         <div id="progress"></div>
         <div id="mainPlot">
             <h2>Triangle wave</h2>
@@ -48,8 +46,6 @@
         <div id="previews">
             <h2>Preview of generated data for each function</h2>
         </div>
-    </head>
-    <body>
         
     </body>
 </html>
