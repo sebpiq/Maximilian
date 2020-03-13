@@ -20,7 +20,7 @@ onmessage = (message) => {
     ]
 
     const dspLoopString = render(dspGraph, config)
-    // console.log(dspLoopString)
+    console.log(dspLoopString)
 
     // Module loaded uses : https://docs.assemblyscript.org/basics/loader
     initializeAsc().then(() => {

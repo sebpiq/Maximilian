@@ -68,3 +68,24 @@ for (BLOCK_FRAME_INDEX = 0; BLOCK_FRAME_INDEX < BLOCK_SIZE; BLOCK_FRAME_INDEX++)
     ${renderedNodes.join(';\n')};
 }`
 }
+
+export const benchmark__SimpleTriangleDspGraph = (config) => {
+    const frequency = 40
+    const constantNode = new ConstantNode(frequency)
+    const triNode = new TriangleNode()
+    const bufferNode = new BufferNode(config.blockSize)
+
+    const dspGraph = [
+        [triNode, [constantNode, 0]],
+        [bufferNode, [triNode, 0]]
+    ]
+
+    const dspLoopString = render(dspGraph, config)
+    // console.log('COMPILED JS', dspLoopString)
+    const dspLoop = new Function(dspLoopString)
+
+    return (context) => {
+        bufferNode.setState('buffer', context.output)
+        return dspLoop
+    }
+}

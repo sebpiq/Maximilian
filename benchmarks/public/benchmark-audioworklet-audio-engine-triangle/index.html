@@ -22,8 +22,8 @@
             document.body.onclick = () => {
                 document.body.classList.remove('init')
                 runner({
-                    blockSizes: [128, 1024, 2048, 4096, 8192, 16384],
-                    totalOperationsPerRun: 500000,
+                    blockSizes: [128, 1024],//, 2048, 4096, 8192, 16384],
+                    totalOperationsPerRun: 5000,
                     benchmarkWorkers: [
                         'worker.DynamicDspEngine.mjs',
                         'worker.DynamicDspEngineMaxi.mjs',

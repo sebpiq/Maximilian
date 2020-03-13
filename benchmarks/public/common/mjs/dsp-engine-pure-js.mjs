@@ -55,3 +55,20 @@ export function run(blockSize, dspGraph) {
         }
     }
 }
+
+export const benchmark__SimpleTriangleDspGraph = (config) => {
+    const frequency = 40
+    setSettings({ sampleRate: config.sampleRate })
+    const constantNode = new ConstantNode(frequency)
+    const triNode = new TriangleNode()
+    const bufferNode = new BufferNode()
+    const dspGraph = [
+        [constantNode, []],
+        [triNode, [constantNode]],
+        [bufferNode, [triNode]]
+    ]
+    return (context) => {
+        bufferNode.buffer = context.output
+        return run.bind(this, config.blockSize, dspGraph)
+    }
+}
