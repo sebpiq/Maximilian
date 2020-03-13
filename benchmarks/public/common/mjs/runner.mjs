@@ -74,20 +74,81 @@ const displayResults = (runnerConfig, benchmarkResults) => {
 
 } 
 
+class RunnerCommunication {
+    
+    constructor(messagePort) {
+        this.messagePort = messagePort
+        this._assemblyScriptCompilerWorker = null
+        this._completePromiseResolve = null
+        this.completePromise = new Promise((resolve) => this._completePromiseResolve = resolve)
+        messagePort.onmessage = this.receive.bind(this)
+    }
+
+    receive(message) {
+        console.log('MAIN THREAD, message', message.data.operation)
+        if (message.data.operation === 'benchmark-complete') {
+            this._completePromiseResolve(message.data.payload)
+        
+        } else if (message.data.operation === 'assemblyscript-compile') {
+            this._assemblyScriptCompilerWorker = new Worker('/common/assemblyscript-utils/assemblyscript-compile-worker.js')
+            this._assemblyScriptCompilerWorker.postMessage(message.data.payload)
+            this._assemblyScriptCompilerWorker.onmessage = (compiledMessage) => {
+                this._assemblyScriptCompilerWorker.terminate()
+                this._assemblyScriptCompilerWorker = null
+                this.messagePort.postMessage({
+                    operation: 'assemblyscript-compiled',
+                    payload: compiledMessage.data,
+                })
+            }
+        }
+    }
+
+    start(config) {
+        this.messagePort.postMessage({
+            operation: 'benchmark-start',
+            payload: {
+                sampleRate: 44100,
+                previewSampleSize: 44100 / 40 * 3,
+                ...config
+            }
+        })
+    }
+}
+
+const runFunctionInWorker = (workerUrl, runParams) => {
+    let workerOpts = {}
+    if (workerUrl.endsWith('.mjs')) {
+        workerOpts = { type: 'module' }
+    }
+    
+    const benchmarkWorker = new Worker(workerUrl, workerOpts)
+
+    const runnerCommunication = new RunnerCommunication(benchmarkWorker)
+    runnerCommunication.start({ name: workerUrl, ...runParams })
+    return runnerCommunication.completePromise.then((results) => {
+        benchmarkWorker.terminate()
+        return results
+    })
+}
+
 const runFunctionInAudioWorklet = async (workerUrl, runParams) => {
+
     class BenchmarkNode extends AudioWorkletNode {  
-        constructor (audioContext, runParams, resolve, reject) {
+        constructor (audioContext, resolve, reject) {
             super(audioContext, 'benchmark-processor', {      
                 numberOfInputs: 1,
                 numberOfOutputs: 1,
                 channelCount: 1,
-                processorOptions: runParams,
             })
-            this.port.onmessage = event => {
+
+            const runnerCommunication = new RunnerCommunication(this.port)
+            runnerCommunication.start({ name: workerUrl, ...runParams })
+            runnerCommunication.completePromise.then((results) => {
                 this.disconnect()
                 audioContext.close()
-                resolve(event.data)
-            }
+                resolve(results)
+            })
+
             this.onprocessorerror = reject
             this.port.start()
         }
@@ -97,36 +158,10 @@ const runFunctionInAudioWorklet = async (workerUrl, runParams) => {
     await audioContext.audioWorklet.addModule(workerUrl)
     
     return new Promise((resolve, reject) => {
-        const benchmarkNode = new BenchmarkNode(audioContext, {
-            sampleRate: 44100,
-            previewSampleSize: 44100 / 40 * 3,
-            name: workerUrl,
-            ...runParams
-        }, resolve, reject)
+        const benchmarkNode = new BenchmarkNode(audioContext, resolve, reject)
         audioContext.resume()
         // To start processing
         benchmarkNode.connect(audioContext.destination)
-    })
-}
-
-const runFunctionInWorker = (workerUrl, runParams) => {
-    let workerOpts = {}
-    if (workerUrl.endsWith('.mjs')) {
-        workerOpts = { type: 'module' }
-    }
-    const benchmarkWorker = new Worker(workerUrl, workerOpts)
-    benchmarkWorker.postMessage({
-        sampleRate: 44100,
-        previewSampleSize: 44100 / 40 * 3,
-        name: workerUrl,
-        ...runParams
-    })
-
-    return new Promise((resolve) => {
-        benchmarkWorker.onmessage = (message) => {
-            benchmarkWorker.terminate()
-            resolve(message.data)
-        }
     })
 }
 

@@ -67,8 +67,8 @@ export const benchmark__SimpleTriangleDspGraph = (config) => {
         [triNode, [constantNode]],
         [bufferNode, [triNode]]
     ]
-    return (context) => {
+    return Promise.resolve((context) => {
         bufferNode.buffer = context.output
         return run.bind(this, config.blockSize, dspGraph)
-    }
+    })
 }

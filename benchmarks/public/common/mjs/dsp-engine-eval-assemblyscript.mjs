@@ -1,4 +1,4 @@
-import { NodeTemplate, render as renderBase } from './dsp-engine-eval-templates'
+import { NodeTemplate } from './dsp-engine-eval-templates.mjs'
 
 export class ConstantNode extends NodeTemplate {
 
@@ -100,4 +100,30 @@ export function loop(): void {
     }
 }
 `
+}
+
+export const benchmark__SimpleTriangleDspGraph = (config, mainThreadCommunication) => {
+    const frequency = 40
+    const constantNode = new ConstantNode(frequency)
+    const triNode = new TriangleNode()
+    const bufferNode = new BufferNode(config.blockSize)
+    const dspGraph = [
+        [constantNode, []],
+        [triNode, [[constantNode, 0]]],
+        [bufferNode, [[triNode, 0]]]
+    ]
+
+    const dspLoopString = render(dspGraph, config)
+    // console.log(dspLoopString)
+
+    return mainThreadCommunication.assemblyScriptLoad(dspLoopString)
+        .then((dspModule) => {
+            const output = dspModule.__getFloat32ArrayView(dspModule[bufferNode.getStateId('getBufferPointer')]())
+            return (context) => {
+                return () => {
+                    dspModule.loop()
+                    context.output.set(output)
+                }
+            }
+        })
 }

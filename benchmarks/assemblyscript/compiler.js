@@ -1,17 +1,9 @@
-// We can't import ES6 modules directly in our worker, since we need to support `importScripts`. 
-// So we let webpack deal with this :
-import { runFunction } from '../public/common/mjs/benchmarking-utils.mjs'
-import * as dspEngineAsc from '../public/common/mjs/dsp-engine-eval-assemblyscript.mjs'
-self.runFunction = runFunction
-Object.assign(self, dspEngineAsc)
-
-// REF : https://docs.assemblyscript.org/basics/loader
-const loader = require("@assemblyscript/loader")
-
+// Packs-in assemblyscript compiler so we can use it in the browser.
+// REF : https://github.com/AssemblyScript/assemblyscript/tree/master/lib/sdk
+importScripts('https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js')
 let SDK_PROMISE 
 
 const initializeAsc = self.initializeAsc = () => {
-    importScripts('https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js')
     if (SDK_PROMISE) {
         return SDK_PROMISE
     }
@@ -25,7 +17,7 @@ const initializeAsc = self.initializeAsc = () => {
     return SDK_PROMISE
 }
 
-const loadAsc = self.loadAsc = async (ascString) => {
+const compileAsc = self.compileAsc = async (ascString) => {
     const asc = await initializeAsc()
     const { binary, stderr } = asc.compileString(ascString, {
         optimizeLevel: 3,
@@ -35,5 +27,5 @@ const loadAsc = self.loadAsc = async (ascString) => {
     if (errorMsg) {
         throw new Error(`COMPILATION FAILED:\n${errorMsg}`)
     }
-    return loader.instantiateSync(binary)
+    return binary
 }

@@ -84,8 +84,8 @@ export const benchmark__SimpleTriangleDspGraph = (config) => {
     // console.log('COMPILED JS', dspLoopString)
     const dspLoop = new Function(dspLoopString)
 
-    return (context) => {
+    return Promise.resolve((context) => {
         bufferNode.setState('buffer', context.output)
         return dspLoop
-    }
+    })
 }

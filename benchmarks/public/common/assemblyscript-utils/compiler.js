@@ -1,0 +1,1 @@
+../../../assemblyscript/build/compiler.js

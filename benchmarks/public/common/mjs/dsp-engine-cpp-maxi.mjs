@@ -12,10 +12,10 @@ export const benchmark__SimpleTriangleDspGraph = (config) => {
 
     dspModule._wgraph_compile(nodeConstant)
     const output = getFloat32Array(dspModule, dspModule._wnode_state_get_pointer(nodeBuffer), config.blockSize)
-    return (context) => {
+    return Promise.resolve((context) => {
         return () => {
             dspModule._dsp_block(nodeConstant)
             context.output.set(output)
         }
-    }
+    })
 }

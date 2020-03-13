@@ -1,4 +1,4 @@
-import { runFunction } from '/common/mjs/benchmarking-utils.mjs'
+import { runFunction } from '/common/mjs/runner-worker.mjs'
 
 const FREQUENCY = 40
 
