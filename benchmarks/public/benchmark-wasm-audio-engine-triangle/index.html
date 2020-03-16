@@ -11,11 +11,12 @@
             import runner from '/common/mjs/runner.mjs'
             runner({
                 blockSizes: [128, 1024, 2048, 4096, 8192, 16384, 100000, 500000, 1000000, 5000000, 10000000],
-                totalOperationsPerRun: 100000000,
+                totalOperationsPerRun: 500000000,
                 benchmarkWorkers: [
                     'worker.DynamicDspEngine.mjs',
-                    'worker.assemblyScript.mjs',
                     'worker.DynamicDspEngineMaxi.mjs',
+                    'worker.wasmTriangleVector.mjs',
+                    'worker.assemblyScript.mjs',
                 ],
                 mode: 'worker',
             }).then(() => {
