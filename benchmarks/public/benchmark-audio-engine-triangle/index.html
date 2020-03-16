@@ -6,6 +6,11 @@
         <link href="/common/css/benchmark.css" rel="stylesheet">        
         <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.15/lodash.min.js"></script>
         <script src="https://d3js.org/d3.v5.min.js"></script>
+
+        <!-- Load 'libfaust' library and wrapper code -->
+        <script src="/common/faust/libfaust-wasm.js"></script>
+        <script src="/common/faust/webaudio-wasm-wrapper.js"></script>
+
         <script type="module">
             import runner from '/common/mjs/runner.mjs'
             runner({

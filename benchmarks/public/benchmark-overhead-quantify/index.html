@@ -8,17 +8,26 @@
         <script src="https://d3js.org/d3.v5.min.js"></script>
         <script type="module">
             import runner from '/common/mjs/runner.mjs'
+            const blockSizes = [10e7, 2*10e7, 3*10e7, 4*10e7, 5*10e7]
+            // const blockSizes = [1000, 10000, 15000, 30000, 50000, 100000]
             runner({
-                // blockSizes: [256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 200000],
-                blockSizes: [4, 8, 16, 32, 64, 128, 256, 2048, 32768, 50000, 200000],
-                totalOperationsPerRun: 100000000,
+                blockSizes,
+                totalOperationsPerRun: _.last(blockSizes),
                 benchmarkWorkers: [
-                    'worker.wasmTriangleVector.mjs',
-                    'worker.wasmTriangle.mjs', 
-                    'worker.maxiWasmTriangle.mjs',
-                    'worker.pureJsDsp.mjs',
+                    'worker.1timesN.mjs',
+                    'worker.Ntimes1.mjs', 
                 ],
-                mode: 'worker'
+                mode: 'worker',
+                graph: {
+                    // { T1tN = C + X 
+                    // { TNt1 = NC + X => { T1tN - TNt1 = C - NC = C * (1 - N) => C = (T1tN - TNt1) / (1 - N)
+                    baselineComparison: (TNt1, T1tN, i) => {
+                        const N = blockSizes[i]
+                        console.log((TNt1 - T1tN) / (N - 1))
+                        return ((TNt1 - T1tN) / (N - 1)) * 10e6 // in nanoseconds
+                    },
+                    plotBaseline: false,
+                }
             }).then(() => {
                 console.log('ALL DONE!!!')
             })

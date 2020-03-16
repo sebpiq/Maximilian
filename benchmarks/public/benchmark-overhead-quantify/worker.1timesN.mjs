@@ -8,10 +8,10 @@ runFromWorker((config) => {
     const dspModule = DspModule()
     const dspOutput = getFloat32Array(dspModule, dspModule._allocate_block(config.blockSize), config.blockSize)
     return Promise.resolve((context) => {
-        const blockOutput = context.output
+        context.output = dspOutput
         return function wasmTriangleVector() {
             dspModule._triangleVector(FREQUENCY)
-            blockOutput.set(dspOutput)
+            for (let i=0; i < config.blockSize; i++) {}
         }        
     })
 })

@@ -9,16 +9,13 @@
         <script type="module">
             import runner from '/common/mjs/runner.mjs'
             runner({
-                // blockSizes: [256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 200000],
-                blockSizes: [4, 8, 16, 32, 64, 128, 256, 2048, 32768, 50000, 200000],
-                totalOperationsPerRun: 100000000,
+                blockSizes: [32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 50000, 500000, 5000000, 50000000],
+                totalOperationsPerRun: 1000000000,
                 benchmarkWorkers: [
                     'worker.wasmTriangleVector.mjs',
-                    'worker.wasmTriangle.mjs', 
-                    'worker.maxiWasmTriangle.mjs',
                     'worker.pureJsDsp.mjs',
                 ],
-                mode: 'worker'
+                mode: 'worker',
             }).then(() => {
                 console.log('ALL DONE!!!')
             })
@@ -27,16 +24,15 @@
     <body>
         <div id="progress"></div>
         <div id="mainPlot">
-            <h2>Triangle wave</h2>
+            <h2>Triangle wave computation JS VS Wasm</h2>
             
             <p>
-                Compare a few ways to generate a triangular wave. No dsp graph, just a loop filling in an array.
+                Compares a generating a triangular wave. No dsp graph, just a loop filling in an array.
             </p>
 
             <ul>
                 <li>
-                    <b>Y</b> Relative speed of different calculation methods as a ratio to a baseline (pureJsTriangle). 
-                Higher, is better.
+                    <b>Y</b> Relative speed of both calculation methods (e.g. 3 means that wasm is 3 times faster than JS).
                 </li>
                 <li>
                     <b>X</b> Number of iterations for each run on the function (in other words, block size).

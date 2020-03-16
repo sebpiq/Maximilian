@@ -13,9 +13,14 @@ export const benchmark__SimpleTriangleDspGraph = (config) => {
     dspModule._wgraph_compile(nodeConstant)
     const output = getFloat32Array(dspModule, dspModule._wnode_state_get_pointer(nodeBuffer), config.blockSize)
     return Promise.resolve((context) => {
-        return () => {
+        function loopTriangleCppMaxi() {
             dspModule._dsp_block(nodeConstant)
+        }
+
+        loopTriangleCppMaxi.after = () => {
             context.output.set(output)
         }
+
+        return loopTriangleCppMaxi
     })
 }

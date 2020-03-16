@@ -20,7 +20,10 @@ export const createGraph = (container, {size, xValues, xScale, yScale}) => {
         .range([size, 0])
 
     // Define the axes
-    const xAxis = d3.axisBottom(xScale).tickFormat(d3.format(".0s"))
+    const xScaleInterpolate = d3.interpolateNumber(...xScale.domain())
+    const xAxis = d3.axisBottom(xScale)
+        .tickValues(_.range(10).map((i) => xScaleInterpolate(Math.exp(1 + i) / Math.exp(1 + 10))))
+        .tickFormat(d3.format(".0s"))
     const yScaleInterpolate = d3.interpolateNumber(...yScale.domain())
     const yAxis = d3.axisLeft(yScale)
         .tickValues(_.range(10).map((i) => yScaleInterpolate(i / 10)))

@@ -6,12 +6,13 @@ const FREQUENCY = 40
 
 runFromWorker((config) => {
     const dspModule = DspModule()
-    const dspOutput = getFloat32Array(dspModule, dspModule._allocate_block(config.blockSize), config.blockSize)
+    const dspOutput = getFloat32Array(dspModule, dspModule._allocate_block(1), 1)
     return Promise.resolve((context) => {
-        const blockOutput = context.output
         return function wasmTriangleVector() {
-            dspModule._triangleVector(FREQUENCY)
-            blockOutput.set(dspOutput)
+            for (let i=0; i < config.blockSize; i++) {
+                dspModule._triangleVector(FREQUENCY)
+                // context.output[i] = dspOutput[0]
+            }
         }        
     })
 })

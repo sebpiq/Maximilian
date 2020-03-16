@@ -120,10 +120,15 @@ export const benchmark__SimpleTriangleDspGraph = (config, mainThreadCommunicatio
         .then((dspModule) => {
             const output = dspModule.__getFloat32ArrayView(dspModule[bufferNode.getStateId('getBufferPointer')]())
             return (context) => {
-                return () => {
+                function loopTriangleAssemblyScript() {
                     dspModule.loop()
+                }
+
+                loopTriangleAssemblyScript.after = () => {
                     context.output.set(output)
                 }
+
+                return loopTriangleAssemblyScript
             }
         })
 }

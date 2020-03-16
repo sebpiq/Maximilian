@@ -23,6 +23,10 @@ const displayProgress = () => {
 }
 
 const displayResults = (runnerConfig, benchmarkResults) => {
+    const graphConfig = _.defaults(runnerConfig.graph || {}, {
+        baselineComparison: (baselineValue, value) => baselineValue / value,
+        plotBaseline: true,
+    })
     const baselineFunctionName = _.last(runnerConfig.benchmarkWorkers)
     const x = runnerConfig.blockSizes
 
@@ -40,8 +44,12 @@ const displayResults = (runnerConfig, benchmarkResults) => {
     // Turn run times into comparison ratios with the baseline
     const seriesRatio = _.mapValues(seriesMeans, 
         samples => 
-            samples.map((value, i) => baselineSamples[i] / value)
+            samples.map((value, i) => graphConfig.baselineComparison(baselineSamples[i], value, i))
     )
+
+    if (!graphConfig.plotBaseline) {
+        delete seriesRatio[baselineFunctionName]
+    }
 
     const graph = createGraph(document.querySelector('#mainPlot'), {
         size: 500, 

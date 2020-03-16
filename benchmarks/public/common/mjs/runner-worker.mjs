@@ -20,6 +20,9 @@ class LoopRunner {
         startDate = TIMING.now()
         loop()
         endDate = TIMING.now()
+        if (loop.after) {
+            loop.after()
+        }
         if (!this.preview) {
             this.preview = context.output.slice(0, this.config.previewSampleSize)
         }
