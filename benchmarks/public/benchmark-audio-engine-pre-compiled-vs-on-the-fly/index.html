@@ -1,0 +1,52 @@
+<!doctype html>
+
+<html>
+    <head>
+        <link href="https://fonts.googleapis.com/css?family=Roboto+Mono&display=swap" rel="stylesheet">
+        <link href="/common/css/benchmark.css" rel="stylesheet">        
+        <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.15/lodash.min.js"></script>
+        <script src="https://d3js.org/d3.v5.min.js"></script>
+
+        <script type="module">
+            import runner from '/common/mjs/runner.mjs'
+            runner({
+                blockSizes: [128, 1024, 2048, 4096, 8192, 16384, 100000, 500000, 1000000, 5000000, 10000000],
+                totalOperationsPerRun: 500000000,
+                benchmarkWorkers: [
+                    'worker.DynamicDspEngine.mjs',
+                    'worker.DynamicDspEngineMaxi.mjs',
+                    'worker.assemblyScript.mjs',
+                    'worker.compiledJsDsp.mjs',
+                    'worker.pureJsDsp.mjs',
+                ],
+                mode: 'worker',
+            }).then(() => {
+                console.log('ALL DONE!!!')
+            })
+        </script>
+    </head>
+    <body>
+        <div id="progress"></div>
+        <div id="mainPlot">
+            <!-- <h2>Audio Engines Triangle Wave</h2>
+            
+            <p>
+                Compare a few simple audio engines (with possibility to run dsp for an arbitrary graph) 
+                written with different technologies, all generating a triangle wave.
+            </p>
+
+            <ul>
+                <li>
+                    <b>Y</b> Relative speed of different calculation methods as a ratio to a baseline (pureJsTriangle). 
+                Higher, is better.
+                </li>
+                <li>
+                    <b>X</b> Number of iterations for each run on the function (in other words, block size).
+                </li>
+            </ul> -->
+        </div>
+        <div id="previews">
+            <h2>Preview of generated data for each function</h2>
+        </div>
+    </body>
+</html>

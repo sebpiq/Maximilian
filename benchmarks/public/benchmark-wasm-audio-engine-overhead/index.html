@@ -14,9 +14,7 @@
                 totalOperationsPerRun: 500000000,
                 benchmarkWorkers: [
                     'worker.DynamicDspEngine.mjs',
-                    'worker.DynamicDspEngineMaxi.mjs',
                     'worker.wasmTriangleVector.mjs',
-                    'worker.assemblyScript.mjs',
                 ],
                 mode: 'worker',
             }).then(() => {
@@ -27,7 +25,7 @@
     <body>
         <div id="progress"></div>
         <div id="mainPlot">
-            <h2>Audio Engines Triangle Wave</h2>
+            <!-- <h2>Audio Engines Triangle Wave</h2>
             
             <p>
                 Compare a few simple audio engines (with possibility to run dsp for an arbitrary graph) 
@@ -42,7 +40,7 @@
                 <li>
                     <b>X</b> Number of iterations for each run on the function (in other words, block size).
                 </li>
-            </ul>
+            </ul> -->
         </div>
         <div id="previews">
             <h2>Preview of generated data for each function</h2>
