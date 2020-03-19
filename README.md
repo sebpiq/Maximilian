@@ -26,7 +26,7 @@ Maximilian is a cross-platform and multi-target audio synthesis and signal proce
 - real-time music information retrieval functions: spectrum analysis, spectral features, octave analysis, Bark scale analysis, and MFCCs
 - example projects for Windows and MacOS, susing command line and OpenFrameworks environments
 - example projects for Firefox and Chromium-based browsers using the Web Audio API ScriptProcessorNode (deprecated!)
-- example projects for Chromium-based browsers using the Web Audio API AudioWorklet (e.g., Chrome, Brave, Edge, Opera)
+- example projects for Chromium-based browsers using the Web Audio API AudioWorklet (e.g. Chrome, Brave, Edge, Opera, Vivaldi)
 
 
 ### Basic Examples
@@ -34,6 +34,10 @@ Maximilian is a cross-platform and multi-target audio synthesis and signal proce
 You can choose between using RTAudio and PortAudio drivers in player.h by uncommenting the appropriate line.  To use PortAudio, you will need to compile the portAudio library from http://http://www.portaudio.com/ and link it with your executable.
 
 Examples demonstrating different features can be found in the maximilian_examples folder.  To try them, replace the contents of main.cpp with the contents of a tutorial file and compile.
+
+### Web Audio
+
+A transpiled javascript version of the library is included in this repository, for both Script Processor Nodes and AudioWorklets. Try this out at (https://mimicproject.com/guides/maximJS). 
 
 
 ### Mac OS XCode Project
@@ -53,7 +57,7 @@ This is in the maximilianTestWindowsVS2010 folder. You will need to install the 
 > ./maximilian
 
 
-### Command Line Compilation in LINUX
+### Command Line Compilation in Linux
 
 With OSS:
 > g++ -Wall -D__LINUX_OSS__ -o maximilian main.cpp RtAudio.cpp player.cpp maximilian.cpp -lpthread
@@ -80,6 +84,3 @@ You can install the ofxMaxim addon by copying the ofxMaxim/ofxMaxim folder into 
 Important: when using Maximilian on OSX, link against the Accelerate framework.
 
 
-### Web Audio
-
-A transpiled javascript version of the library is included in this repository, for both Script Processor Nodes and Audio AudioWorklets.  Try this out at (https://mimicproject.com/guides/maximJS). 

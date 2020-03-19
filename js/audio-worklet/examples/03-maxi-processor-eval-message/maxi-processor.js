@@ -1,4 +1,4 @@
-import Module from '../build/maximilian.wasmmodule.js';
+import Maximilian from '../../build/maximilian.wasmmodule.js';
 /**
  * The main Maxi Audio wrapper with a WASM-powered AudioWorkletProcessor.
  *
@@ -27,11 +27,11 @@ class MaxiProcessor extends AudioWorkletProcessor {
     this.sampleRate = 44100;
     this.sampleIndex = 1;
 
-    this.mySine = new Module.maxiOsc();
-    this.myOtherSine = new Module.maxiOsc();
-    this.myLastSine = new Module.maxiOsc();
+    this.mySine = new Maximilian.maxiOsc();
+    this.myOtherSine = new Maximilian.maxiOsc();
+    this.myLastSine = new Maximilian.maxiOsc();
 
-    this.eval = eval(`() => { return this.mySine.sinewave(440)}`);
+    this.signal = eval(`() => { return this.mySine.sinewave(440)}`);
 
     this.port.onmessage = event => { // message port async handler
 
@@ -60,27 +60,17 @@ class MaxiProcessor extends AudioWorkletProcessor {
   process(inputs, outputs, parameters) {
 
     const outputsLength = outputs.length;
-    // DEBUG:
-    // console.log(`gain: ` + parameters.gain[0]);
     for (let outputId = 0; outputId < outputsLength; ++outputId) {
       let output = outputs[outputId];
       const channelLenght = output.length;
       for (let channelId = 0; channelId < channelLenght; ++channelId) {
         let outputChannel = output[channelId];
-        if (parameters.gain.length === 1) { // if gain is constant, lenght === 1, gain[0]
-          for (let i = 0; i < outputChannel.length; ++i) {
-            outputChannel[i] = this.signal() * parameters.gain[0];
-          }
-        } else { // if gain is varying, lenght === 128, gain[i]
-          for (let i = 0; i < outputChannel.length; ++i) {
-            outputChannel[i] = this.signal() * parameters.gain[i];
-          }
+        for (let i = 0; i < outputChannel.length; ++i) {
+          const gain = parameters.gain.length === 1? parameters.gain[0] : parameters.gain[i]; // if gain is constant, lenght === 1, gain[0]; if gain is varying, lenght === 128, gain[i]
+          outputChannel[i] = this.signal() * gain;
         }
-        console.log(`inputs ${inputs.length}, outputsLen ${outputs.length}, outputLen ${output.length}, outputChannelLen ${outputChannel.length}`);
       }
-      this.sampleIndex++;
     }
-
     return true;
   }
 };

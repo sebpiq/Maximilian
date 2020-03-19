@@ -1,4 +1,4 @@
-import Module from '../../build/maximilian.wasmmodule.js';
+import Maximilian from "../../build/maximilian.wasmmodule.js";
 /**
  * The main Maxi Audio wrapper with a WASM-powered AudioWorkletProcessor.
  *
@@ -33,7 +33,8 @@ class MaxiProcessor extends AudioWorkletProcessor {
       }
     };
 
-    this.osc = new Module.maxiOsc();
+    // this.osc = new Module.maxiOsc();
+    this.osc = new Maximilian.maxiOsc();
   }
 
   /**
@@ -41,29 +42,17 @@ class MaxiProcessor extends AudioWorkletProcessor {
    */
   process(inputs, outputs, parameters) {
 
-    // const outputsLength = outputs.length;
-    // for (let outputId = 0; outputId < outputsLength; ++outputId) {
-
-    //   let output = outputs[outputId];
-    //   const channelLenght = output.length;
-    //   for (let channelId = 0; channelId < channelLenght; ++channelId) {
-      
-    //     let outputChannel = output[channelId];
-    //     if (parameters.gain.length === 1) { // if gain is constant, lenght === 1, gain[0]
-      
-    //       for (let i = 0; i < outputChannel.length; ++i) {
-    //         outputChannel[i] = this.osc.sinewave(400) * parameters.gain[0];
-    //       }
-    //     }
-    //     else { // if gain is varying, lenght === 128, gain[i]
-    //       for (let i = 0; i < outputChannel.length; ++i) {
-    //         outputChannel[i] = this.osc.sinewave(400) * parameters.gain[i];
-    //       }
-    //     }
-    //   }
-    // }
-    for (let i = 0; i < 128; ++i) {
-      outputs[0][0][i] = this.osc.sinewave(400) * parameters.gain[0];
+    const outputsLength = outputs.length;
+    for (let outputId = 0; outputId < outputsLength; ++outputId) {
+      let output = outputs[outputId];
+      const channelLenght = output.length;
+      for (let channelId = 0; channelId < channelLenght; ++channelId) {
+        let outputChannel = output[channelId];
+        const gain = parameters.gain.length === 1? parameters.gain[0] : parameters.gain[i];
+        for (let i = 0; i < outputChannel.length; ++i) {
+          outputChannel[i] = this.osc.sinewave(220) * gain;
+        }
+      }
     }
     return true;
   }

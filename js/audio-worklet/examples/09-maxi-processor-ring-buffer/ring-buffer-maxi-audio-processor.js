@@ -1,7 +1,7 @@
-import Module from '../build/maximilian.wasmmodule.js';
+import Maximilian from "../../build/maximilian.wasmmodule.js";
 // import { VariableBufferKernel } from './ring-buffer-maxi-audio.wasmmodule.js';
 import { RENDER_QUANTUM_FRAMES, MAX_CHANNEL_COUNT, HeapAudioBuffer, RingBuffer }
-    from '../common/wasm-audio-helper.js';
+    from '../../common/wasm-audio-helper.js';
 
 /**
  * The main Maxi Audio wrapper with a WASM-powered AudioWorkletProcessor.
@@ -45,8 +45,8 @@ class RingBufferMaxiAudioProcessor extends AudioWorkletProcessor {
       console.log(event.data);
     };
 
-    this.mySine = new Module.maxiOsc();
-    this.myOtherSine = new Module.maxiOsc();
+    this.mySine = new Maximilian.maxiOsc();
+    this.myOtherSine = new Maximilian.maxiOsc();
 
   }
 

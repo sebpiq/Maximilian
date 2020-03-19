@@ -1,5 +1,4 @@
-import Module from '../../build/maximilian.wasmmodule.js';
-
+import Maximilian from "../../build/maximilian.wasmmodule.js";
 /**
  * The main Maxi Audio wrapper with a WASM-powered AudioWorkletProcessor.
  *
@@ -23,8 +22,8 @@ class MaxiProcessor extends AudioWorkletProcessor {
       console.log(event.data);
     };
 
-    this.mySine = new Module.maxiOsc();
-    this.myOtherSine = new Module.maxiOsc();
+    this.mySine = new Maximilian.maxiOsc();
+    this.myOtherSine = new Maximilian.maxiOsc();
   }
 
   /**
@@ -36,16 +35,11 @@ class MaxiProcessor extends AudioWorkletProcessor {
     for (let outputId = 0; outputId < outputsLength; ++outputId) {
       let output = outputs[outputId];
       const channelLenght = output.length;
-
       for (let channelId = 0; channelId < channelLenght; ++channelId) {
-        const gain = parameters.gain;
-        const isConstant = gain.length === 1
         let outputChannel = output[channelId];
-
         for (let i = 0; i < outputChannel.length; ++i) {
-          const amp = isConstant ? gain[0] : gain[i]
-          outputChannel[i] = (this.mySine.sawn(60) * this.myOtherSine.sinewave(0.4)) * amp;
-          // outputChannel[i] = ( Math.sin(i) + 0.4 ) * amp;
+          const gain = parameters.gain.length === 1 ? parameters.gain[0] : parameters.gain[i]
+          outputChannel[i] = this.mySine.sawn(60) * this.myOtherSine.sinewave(0.4) * gain;
         }
       }
     }

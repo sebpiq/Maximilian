@@ -15,10 +15,10 @@
 
 <body>
 
-  <h1> Test simple tone and gain processor </h1>
+  <h1> Test hot-swapping between AudioWorklet processors </h1>
   <p id="funcs"></p>
   <p>
-    A simple sinewave with gain control. [You might need to clean the cache when you are testing your worklet processor
+    Play and stop to hot-swap a simple sinewave with a noise function, both with gain control. [You might need to clean the cache when you are testing your worklet processor
     code]
   </p>
 
@@ -62,14 +62,6 @@
       minusButton.addEventListener("click", () => decreaseVolume());
     }
 
-
-    /**
-     * @translateIntermediateToLanguageProcessorCode
-     */
-    function translateIntermediateLanguageToProcessorCode(expression) {
-
-    }
-
     /**
      * @createAndRegisterCustomProcessorCode
      */
@@ -81,16 +73,17 @@
           userDefinedFunction = `Math.random() * 2`;
           break;
         case 1:
-          userDefinedFunction = `(Math.sin(400) + 0.4)`;
+          userDefinedFunction = `Math.sin(2 * Math.PI * this.frequency * this.time)`;
           break;
         default:
-          userDefinedFunction = `(Math.sin(440) + 0.4)`;
+          userDefinedFunction = `Math.sin(2 * Math.PI * this.frequency * this.time)`;
       }
 
       // We get an "Error on loading worklet:  DOMException" with the following import:
       // import Module from './maximilian.wasmmodule.js';
+      // import Module from "${new URL("./maximilian.wasmmodule.js", location.href)}";
       return `
-        // import Module from "${new URL("./maximilian.wasmmodule.js", location.href)}";
+       
         class CustomProcessor extends AudioWorkletProcessor {
           static get parameterDescriptors() {
             return [{
@@ -100,6 +93,8 @@
           }
           constructor() {
             super();
+            this.time = 0;
+            this.frequency = 440;
             this.sampleRate = 44100;
 
             this.port.onmessage = (event) => {
@@ -118,10 +113,10 @@
                 const gain = parameters.gain;
                 const isConstant = gain.length === 1
                 let outputChannel = output[channelId];
-
                 for (let i = 0; i < outputChannel.length; ++i) {
-                  const amp = isConstant ? gain[0] : gain[i]
-                  outputChannel[i] = ${userDefinedFunction} * amp;
+                  const gain = parameters.gain.length === 1? parameters.gain[0] : parameters.gain[i];
+                  outputChannel[i] = ${userDefinedFunction} * gain;
+                  this.time += 1/this.sampleRate;
                 }
               }
             }
@@ -173,6 +168,9 @@
         };
         customNode.connect(audioContext.destination);
       }).catch(e => console.log("Error on loading worklet: ", e));
+    
+      processorCount++;
+    
     }
 
 
